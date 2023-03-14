@@ -8,7 +8,15 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { fetcher } from '@/lib/fetcher'
 
 const schema = z.object({
-  customer_email: z.string().email()
+  custom_fields: z
+    .array(
+      z.object({
+        key: z.string(),
+        type: z.enum(['numeric', 'text']),
+        optional: z.boolean()
+      })
+    )
+    .max(2)
 })
 
 type CheckoutSessionInputs = z.infer<typeof schema>
@@ -19,6 +27,20 @@ export default function CheckoutSection(): JSX.Element {
     handleSubmit,
     register
   } = useForm<CheckoutSessionInputs>({
+    defaultValues: {
+      custom_fields: [
+        {
+          key: 'engraving',
+          type: 'text',
+          optional: false
+        },
+        {
+          key: 'invoice',
+          type: 'numeric',
+          optional: true
+        }
+      ]
+    },
     resolver: zodResolver(schema)
   })
 
@@ -38,7 +60,10 @@ export default function CheckoutSection(): JSX.Element {
             ],
             mode: 'payment',
             success_url: window.location.href,
-            ...data
+            custom_fields: data.custom_fields.map((field) => ({
+              label: { custom: field.key, type: 'custom' },
+              ...field
+            }))
           })
         }
       )
@@ -50,7 +75,15 @@ export default function CheckoutSection(): JSX.Element {
   }
 
   const snippet = `const checkoutSession: Stripe.Checkout.Session = await stripe.checkout.sessions.create({
-  customer_email: '4242@stripe.com',
+  custom_fields: [{
+    key: 'engraving',
+    label: {
+      custom: 'FREE engraving',
+      type: 'custom'
+    },
+    optional: false,
+    type: 'text'
+  }]
   line_items: [{
     price: 'price_xyz'
     quantity: 1
@@ -71,26 +104,123 @@ export default function CheckoutSection(): JSX.Element {
         </SyntaxHighlighter>
         <form
           onSubmit={handleSubmit(createCheckoutSession)}
-          className="sm:max-w-md space-y-8"
+          className="space-y-8"
         >
-          <div className="grid grid-cols-1 gap-6">
-            <label className="block">
-              <span className="text-gray-700">E-mail address</span>
-              <input
-                {...register('customer_email')}
-                type="email"
-                className="
-                    mt-1
-                    block
-                    w-full
-                    rounded-md
-                    border-gray-300
-                    shadow-sm
-                    focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50
-                  "
-                placeholder="4242@stripe.com"
-              />
-            </label>
+          <div className="grid grid-cols-6 gap-6">
+            <div className="col-span-6 sm:col-span-3 space-y-6">
+              <label className="block">
+                <span className="text-gray-700">Key</span>
+                <input
+                  {...register('custom_fields.0.key')}
+                  type="text"
+                  className="
+                mt-1
+                block
+                w-full
+                rounded-md
+                border-gray-300
+                shadow-sm
+                focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50
+                "
+                />
+              </label>
+              <label className="block">
+                <span className="text-gray-700">Type</span>
+                <select
+                  {...register('custom_fields.0.type')}
+                  className="
+                block
+                w-full
+                mt-1
+                rounded-md
+                border-gray-300
+                shadow-sm
+                focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50
+                "
+                >
+                  <option value="numeric">Numeric</option>
+                  <option value="text">Text</option>
+                </select>
+              </label>
+              <div className="block">
+                <div className="mt-2">
+                  <div>
+                    <label className="inline-flex items-center">
+                      <input
+                        {...register('custom_fields.0.optional')}
+                        type="checkbox"
+                        className="
+                          rounded
+                          bg-gray-200
+                          border-transparent
+                          focus:border-transparent focus:bg-gray-200
+                          text-gray-700
+                          focus:ring-1 focus:ring-offset-2 focus:ring-gray-500
+                        "
+                      />
+                      <span className="ml-2">Optional</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="col-span-6 sm:col-span-3 space-y-6">
+              <label className="block">
+                <span className="text-gray-700">Key</span>
+                <input
+                  {...register('custom_fields.1.key')}
+                  type="text"
+                  className="
+                mt-1
+                block
+                w-full
+                rounded-md
+                border-gray-300
+                shadow-sm
+                focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50
+                "
+                />
+              </label>
+              <label className="block">
+                <span className="text-gray-700">Type</span>
+                <select
+                  {...register('custom_fields.1.type')}
+                  className="
+                block
+                w-full
+                mt-1
+                rounded-md
+                border-gray-300
+                shadow-sm
+                focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50
+                "
+                >
+                  <option value="numeric">Numeric</option>
+                  <option value="text">Text</option>
+                </select>
+              </label>
+              <div className="block">
+                <div className="mt-2">
+                  <div>
+                    <label className="inline-flex items-center">
+                      <input
+                        {...register('custom_fields.1.optional')}
+                        type="checkbox"
+                        className="
+                          rounded
+                          bg-gray-200
+                          border-transparent
+                          focus:border-transparent focus:bg-gray-200
+                          text-gray-700
+                          focus:ring-1 focus:ring-offset-2 focus:ring-gray-500
+                        "
+                      />
+                      <span className="ml-2">Optional</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           <button
             type="submit"
