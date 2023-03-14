@@ -2,6 +2,7 @@ import type { NextPage } from 'next'
 
 import * as React from 'react'
 
+import BuyButtonSection from 'components/buy-button-section'
 import CheckoutSection from 'components/checkout-section'
 import PaymentIntentSection from 'components/payment-intent-section'
 
@@ -13,6 +14,7 @@ export default function Index({}: NextPage) {
         <div className="divide-y">
           <CheckoutSection />
           <PaymentIntentSection />
+          <BuyButtonSection />
         </div>
       </div>
     </div>
