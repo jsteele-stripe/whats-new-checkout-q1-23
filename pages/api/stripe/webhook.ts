@@ -44,12 +44,19 @@ async function handler(
   res: NextApiResponse<{ message: string }>,
   event: Stripe.Event
 ) {
-  const permittedEvents: [string?] = []
+  const permittedEvents: string[] = [
+    'checkout.session.completed',
+    'payment_intent.succeeded'
+  ]
 
   if (req.method === 'POST') {
     if (permittedEvents.includes(event.type)) {
       try {
         switch (event.type) {
+          case 'checkout.session.completed':
+          case 'payment_intent.succeeded':
+            console.log(JSON.stringify(event.data.object, null, 4))
+            break
           default:
             throw new Error(`Unhhandled event: ${event.type}`)
         }

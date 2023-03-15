@@ -19,6 +19,7 @@ export default function BuyButtonSection(): JSX.Element {
 <stripe-buy-button
   buy-button-id="buy_btn_xyz"
   publishable-key="pk_test_xxx"
+  client-reference-id="foo_bar_baz"
 />`
   return (
     <div className="py-8">
@@ -33,6 +34,7 @@ export default function BuyButtonSection(): JSX.Element {
         <stripe-buy-button
           buy-button-id="buy_btn_1MlenFBDB9fVNtrXlpa5Bs62"
           publishable-key={process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+          client-reference-id="foo_bar_baz"
         />
       </div>
     </div>
