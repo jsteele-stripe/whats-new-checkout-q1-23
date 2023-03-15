@@ -10,7 +10,9 @@ export default function Index({}: NextPage) {
   return (
     <div className="max-w-xl mx-auto md:max-w-4xl">
       <div className="py-8">
-        <h1 className="text-4xl font-bold">Headline</h1>
+        <h1 className="text-4xl font-bold">
+          What's new in Checkout and Payment Links? Q1 2023
+        </h1>
         <div className="divide-y">
           <CheckoutSection />
           <PaymentIntentSection />

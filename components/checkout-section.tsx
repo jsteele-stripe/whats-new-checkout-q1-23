@@ -94,9 +94,10 @@ export default function CheckoutSection(): JSX.Element {
 
   return (
     <div className="py-8">
-      <h1 className="text-2xl font-bold">Checkout Session creation</h1>
+      <h1 className="text-2xl font-bold">Custom fields with Checkout</h1>
       <p className="mt-2 text-lg text-gray-600">
-        Example API call to create a Checkout Session
+        Example API call to create a Checkout Session with multiple custom
+        fields
       </p>
       <div className="space-y-8">
         <SyntaxHighlighter language="typescript" style={oneDark}>
