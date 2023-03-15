@@ -7,7 +7,13 @@ import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { fetcher } from '@/lib/fetcher'
-import { Elements, PaymentElement } from '@stripe/react-stripe-js'
+import {
+  AddressElement,
+  Elements,
+  PaymentElement,
+  useElements,
+  useStripe
+} from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 
 const schema = z.object({
@@ -52,13 +58,41 @@ export default function PaymentIntentSection(): JSX.Element {
   options={{ clientSecret: 'pi_abc_secret_xyz' }}
 >
   <PaymentElement />
+  <AddressElement options={{ mode: 'shipping' }} />
 </Elements>`
+
+  const Checkout = (): JSX.Element => {
+    const elements = useElements()
+    const stripe = useStripe()
+
+    const confirmPaymentIntent = async (e: React.FormEvent) => {
+      e.preventDefault()
+
+      await stripe.confirmPayment({
+        elements,
+        confirmParams: { return_url: window.location.href }
+      })
+    }
+    return (
+      <React.Fragment>
+        <PaymentElement />
+        <AddressElement options={{ mode: 'shipping' }} />
+        <button
+          onClick={confirmPaymentIntent}
+          className="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+        >
+          Pay
+        </button>
+      </React.Fragment>
+    )
+  }
 
   return (
     <div className="py-8">
-      <h1 className="text-2xl font-bold">Payment Element demo</h1>
+      <h1 className="text-2xl font-bold">Address Element demo</h1>
       <p className="mt-2 text-lg text-gray-600">
-        Example Payment Element initialisation
+        Example Address Element initialisation to collect shipping address
+        details during payment confirmation
       </p>
       <div className="space-y-8">
         <SyntaxHighlighter language="jsx" style={oneDark}>
@@ -69,7 +103,7 @@ export default function PaymentIntentSection(): JSX.Element {
             stripe={loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)}
             options={{ clientSecret }}
           >
-            <PaymentElement />
+            <Checkout />
           </Elements>
         ) : null}
         <form
@@ -120,7 +154,7 @@ export default function PaymentIntentSection(): JSX.Element {
             type="submit"
             className="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
           >
-            Initialise Payment Element
+            Initialise Address Element
           </button>
         </form>
       </div>
